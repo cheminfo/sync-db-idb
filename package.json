@@ -1,0 +1,29 @@
+{
+  "name": "sync-db-idb",
+  "version": "0.0.1",
+  "description": "IndexedDB driver for SyncDB",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "mocha --require should --reporter mocha-better-spec-reporter"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/sync-db-idb.git"
+  },
+  "keywords": [
+    "sync",
+    "db",
+    "indexeddb"
+  ],
+  "author": "Michaël Zasso",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/sync-db-idb/issues"
+  },
+  "homepage": "https://github.com/cheminfo/sync-db-idb#readme",
+  "devDependencies": {
+    "mocha": "latest",
+    "mocha-better-spec-reporter": "latest",
+    "should": "latest"
+  }
+}
