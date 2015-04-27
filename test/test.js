@@ -2,8 +2,8 @@
 
 describe('sync-db-idb', function () {
 
-    it('should be OK', function () {
-        true.should.be.ok;
+    it('is not tested yet!', function () {
+        throw new Error('Add tests !');
     });
 
 });
