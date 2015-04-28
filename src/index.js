@@ -1,7 +1,6 @@
 'use strict';
 
 var OBJECT_STORE_DATA = 'syncdb-data';
-var OBJECT_STORE_INFO = 'syncdb-info';
 
 function IDBDriver(dbName) {
     if (typeof dbName !== 'string')
@@ -22,8 +21,8 @@ IDBDriver.prototype.init = function () {
         };
         openRequest.onupgradeneeded = function (event) {
             var db = event.target.result;
-            db.createObjectStore(OBJECT_STORE_DATA, {keyPath: 'id'});
-            db.createObjectStore(OBJECT_STORE_INFO, {keyPath: 'id'});
+            var objectStore = db.createObjectStore(OBJECT_STORE_DATA, {keyPath: 'id'});
+            objectStore.createIndex('seqid', 'seqid');
         };
     });
 };
@@ -32,25 +31,12 @@ IDBDriver.prototype.insert = function (obj) {
     var self = this;
     return new Promise(function (resolve, reject) {
         var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readwrite');
-        transaction.oncomplete = updateSeqId;
+        transaction.oncomplete = resolve;
         transaction.onerror = function () {
             reject(transaction.error);
         };
         var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-        objectStore.put(obj.value);
-
-        function updateSeqId() {
-            var transaction = self._db.transaction(OBJECT_STORE_INFO, 'readwrite');
-            transaction.oncomplete = resolve;
-            transaction.onerror = function () {
-                reject(transaction.error);
-            };
-            var objectStore = transaction.objectStore(OBJECT_STORE_INFO);
-            objectStore.put({
-                id: 'seqid',
-                seqid: obj.seqid
-            });
-        }
+        objectStore.put(obj);
     });
 };
 
@@ -80,15 +66,19 @@ IDBDriver.prototype.getData = function () {
 IDBDriver.prototype.getLastSeq = function () {
     var self = this;
     return new Promise(function (resolve, reject) {
-        var transaction = self._db.transaction(OBJECT_STORE_INFO, 'readonly');
+        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
         transaction.onerror = function () {
             reject(transaction.error);
         };
-        var objectStore = transaction.objectStore(OBJECT_STORE_INFO);
-        var request = objectStore.get('seqid');
-        request.onsuccess = function (event) {
-            var result = event.target.result;
-            resolve(result ? result.seqid : 0);
+        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+        var index = objectStore.index('seqid');
+        index.openCursor(null, 'prev').onsuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                resolve(cursor.value.seqid);
+            } else {
+                resolve(0);
+            }
         };
     });
 };
