@@ -8,9 +8,11 @@ function IDBDriver(dbName) {
 
     this._db = null;
     this._name = dbName;
+
+    this.init = this._init();
 }
 
-IDBDriver.prototype.init = function () {
+IDBDriver.prototype._init = function () {
     var self = this;
     return new Promise(function (resolve, reject) {
         var openRequest = window.indexedDB.open(self._name, 1);
