@@ -1,17 +1,23 @@
 'use strict';
 
+global.window = {
+    indexedDB: require('fake-indexeddb')
+};
+
 var IDBDriver = require('..');
 
 describe('sync-db-idb', function () {
 
-    it('basic test', function (done) {
-        //TODO find a way to access indexedDB API form Node
+    it('basic test', function () {
         var idb = new IDBDriver('test');
 
         function getSeq() {
-            idb.getLastSeq().then(function (id) {
+            return idb.getLastSeq().then(function (id) {
                 id.should.equal(9);
-                done();
+
+                return idb.get(913).then(function (doc) {
+                    doc.value.val.should.equal(64);
+                });
             });
         }
 
@@ -25,7 +31,7 @@ describe('sync-db-idb', function () {
             ]);
         }
 
-        idb.init().then(insert).then(getSeq, done);
+        return idb.init.then(insert).then(getSeq);
     });
 
 });

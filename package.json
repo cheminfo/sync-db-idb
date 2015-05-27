@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/cheminfo/sync-db-idb#readme",
   "devDependencies": {
+    "fake-indexeddb": "1.0.3",
     "mocha": "latest",
     "mocha-better-spec-reporter": "latest",
     "should": "latest"
