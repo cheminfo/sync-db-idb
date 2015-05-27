@@ -42,6 +42,21 @@ IDBDriver.prototype.insert = function (obj) {
     });
 };
 
+IDBDriver.prototype.get = function (id) {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+        transaction.onerror = function () {
+            reject(transaction.error);
+        };
+        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+        var request = objectStore.get(id);
+        request.onsuccess = function (event) {
+            resolve(event.target.result);
+        };
+    });
+};
+
 IDBDriver.prototype.getData = function () {
     var self = this;
     return new Promise(function (resolve, reject) {
