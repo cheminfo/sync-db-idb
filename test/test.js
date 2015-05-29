@@ -31,7 +31,7 @@ describe('sync-db-idb', function () {
             ]);
         }
 
-        return idb.init.then(insert).then(getSeq);
+        return insert().then(getSeq);
     });
 
 });

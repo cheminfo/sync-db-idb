@@ -9,12 +9,8 @@ function IDBDriver(dbName) {
     this._db = null;
     this._name = dbName;
 
-    this.init = this._init();
-}
-
-IDBDriver.prototype._init = function () {
     var self = this;
-    return new Promise(function (resolve, reject) {
+    this._init = new Promise(function (resolve, reject) {
         var openRequest = window.indexedDB.open(self._name, 1);
         openRequest.onerror = reject;
         openRequest.onsuccess = function () {
@@ -27,76 +23,84 @@ IDBDriver.prototype._init = function () {
             objectStore.createIndex('seqid', 'seqid');
         };
     });
-};
+}
 
 IDBDriver.prototype.insert = function (obj) {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readwrite');
-        transaction.oncomplete = resolve;
-        transaction.onerror = function () {
-            reject(transaction.error);
-        };
-        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-        objectStore.put(obj);
+    return this._init.then(function () {
+        return new Promise(function (resolve, reject) {
+            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readwrite');
+            transaction.oncomplete = resolve;
+            transaction.onerror = function () {
+                reject(transaction.error);
+            };
+            var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+            objectStore.put(obj);
+        });
     });
 };
 
 IDBDriver.prototype.get = function (id) {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
-        transaction.onerror = function () {
-            reject(transaction.error);
-        };
-        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-        var request = objectStore.get(id);
-        request.onsuccess = function (event) {
-            resolve(event.target.result);
-        };
+    return this._init.then(function () {
+        return new Promise(function (resolve, reject) {
+            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            transaction.onerror = function () {
+                reject(transaction.error);
+            };
+            var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+            var request = objectStore.get(id);
+            request.onsuccess = function (event) {
+                resolve(event.target.result);
+            };
+        });
     });
 };
 
 IDBDriver.prototype.getData = function () {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        var result = [];
-        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
-        transaction.oncomplete = function () {
-            resolve(result);
-        };
-        transaction.onerror = function () {
-            reject(transaction.error);
-        };
-        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-        var request = objectStore.openCursor();
-        request.onsuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                result.push(cursor.value);
-                cursor.continue();
-            }
-        };
+    return this._init.then(function () {
+        return new Promise(function (resolve, reject) {
+            var result = [];
+            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            transaction.oncomplete = function () {
+                resolve(result);
+            };
+            transaction.onerror = function () {
+                reject(transaction.error);
+            };
+            var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+            var request = objectStore.openCursor();
+            request.onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    result.push(cursor.value);
+                    cursor.continue();
+                }
+            };
+        });
     });
 };
 
 IDBDriver.prototype.getLastSeq = function () {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
-        transaction.onerror = function () {
-            reject(transaction.error);
-        };
-        var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-        var index = objectStore.index('seqid');
-        index.openCursor(null, 'prev').onsuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                resolve(cursor.value.seqid);
-            } else {
-                resolve(0);
-            }
-        };
+    return this._init.then(function () {
+        return new Promise(function (resolve, reject) {
+            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            transaction.onerror = function () {
+                reject(transaction.error);
+            };
+            var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
+            var index = objectStore.index('seqid');
+            index.openCursor(null, 'prev').onsuccess = function (event) {
+                var cursor = event.target.result;
+                if (cursor) {
+                    resolve(cursor.value.seqid);
+                } else {
+                    resolve(0);
+                }
+            };
+        });
     });
 };
 
