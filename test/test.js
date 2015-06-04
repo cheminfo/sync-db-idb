@@ -1,8 +1,6 @@
 'use strict';
 
-global.window = {
-    indexedDB: require('fake-indexeddb')
-};
+global.indexedDB = require('fake-indexeddb');
 
 var IDBDriver = require('..');
 

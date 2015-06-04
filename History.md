@@ -1,3 +1,8 @@
+0.0.6 / 2015-06-04
+==================
+
+* use directly indexedDB for Worker compatibility
+
 0.0.5 / 2015-05-29
 ==================
 

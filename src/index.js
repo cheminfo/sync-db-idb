@@ -11,7 +11,7 @@ function IDBDriver(dbName) {
 
     var self = this;
     this._init = new Promise(function (resolve, reject) {
-        var openRequest = window.indexedDB.open(self._name, 1);
+        var openRequest = indexedDB.open(self._name, 1);
         openRequest.onerror = reject;
         openRequest.onsuccess = function () {
             self._db = openRequest.result;
