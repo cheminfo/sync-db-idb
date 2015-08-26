@@ -14,7 +14,7 @@ describe('sync-db-idb', function () {
                 id.should.equal(9);
 
                 return idb.get(913).then(function (doc) {
-                    doc.value.val.should.equal(64);
+                    doc.val.should.equal(64);
                 });
             });
         }

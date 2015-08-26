@@ -51,7 +51,7 @@ IDBDriver.prototype.get = function (id) {
             var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
             var request = objectStore.get(id);
             request.onsuccess = function (event) {
-                resolve(event.target.result);
+                resolve(event.target.result.value);
             };
         });
     });
@@ -74,7 +74,7 @@ IDBDriver.prototype.getData = function () {
             request.onsuccess = function (event) {
                 var cursor = event.target.result;
                 if (cursor) {
-                    result.push(cursor.value);
+                    result.push(cursor.value.value);
                     cursor.continue();
                 }
             };
