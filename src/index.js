@@ -86,7 +86,7 @@ IDBDriver.prototype.getData = function () {
     });
 };
 
-IDBDriver.prototype.getLastSeq = function () {
+IDBDriver.prototype.getLastSeqid = function () {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {

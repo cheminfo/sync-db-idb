@@ -10,11 +10,11 @@ describe('sync-db-idb', function () {
         var idb = new IDBDriver('test');
 
         function getSeq() {
-            return idb.getLastSeq().then(function (id) {
+            return idb.getLastSeqid().then(function (id) {
                 id.should.equal(9);
 
                 return idb.get(913).then(function (doc) {
-                    doc.val.should.equal(64);
+                    doc.value.val.should.equal(64);
                 });
             });
         }
