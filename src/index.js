@@ -108,6 +108,15 @@ IDBDriver.prototype.getLastSeqid = function () {
     });
 };
 
+IDBDriver.prototype.getRevData = function () {
+    // todo optimize, do not get everything from IDB
+    return this.getData().then(function (data) {
+        return data.filter(function (doc) {
+            return doc.revid > 0;
+        });
+    });
+};
+
 IDBDriver.prototype.clearDatabase = function () {
     var self = this;
     return new Promise(function (resolve, reject) {
