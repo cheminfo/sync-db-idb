@@ -1,3 +1,11 @@
+0.1.0 / 2015-10-08
+==================
+
+* update get and getData for latest sync-db
+* add clearDatabase
+* rename getLastSeq to getLastSeqid
+* add getRevData
+
 0.0.7 / 2015-08-26
 ==================
 
