@@ -9,6 +9,10 @@ function IDBDriver(dbName) {
     this._db = null;
     this._name = dbName;
 
+    this._doInit();
+}
+
+IDBDriver.prototype._doInit = function () {
     var self = this;
     this._init = new Promise(function (resolve, reject) {
         var openRequest = indexedDB.open(self._name, 1);
@@ -23,7 +27,7 @@ function IDBDriver(dbName) {
             objectStore.createIndex('seqid', 'seqid');
         };
     });
-}
+};
 
 IDBDriver.prototype.insert = function (obj) {
     var self = this;
@@ -101,6 +105,18 @@ IDBDriver.prototype.getLastSeq = function () {
                 }
             };
         });
+    });
+};
+
+IDBDriver.prototype.clearDatabase = function () {
+    var self = this;
+    return new Promise(function (resolve, reject) {
+        var request = indexedDB.deleteDatabase(self._name);
+        request.onerror = reject;
+        request.onsuccess = function () {
+            self._doInit();
+            resolve();
+        };
     });
 };
 
