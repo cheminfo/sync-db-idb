@@ -55,7 +55,7 @@ IDBDriver.prototype.get = function (id) {
             var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
             var request = objectStore.get(id);
             request.onsuccess = function (event) {
-                resolve(event.target.result);
+                resolve(event.target.result || null);
             };
         });
     });
@@ -119,13 +119,16 @@ IDBDriver.prototype.getRevData = function () {
 
 IDBDriver.prototype.clearDatabase = function () {
     var self = this;
-    return new Promise(function (resolve, reject) {
-        var request = indexedDB.deleteDatabase(self._name);
-        request.onerror = reject;
-        request.onsuccess = function () {
-            self._doInit();
-            resolve();
-        };
+    return this._init.then(function () {
+        self._db.close();
+        return new Promise(function (resolve, reject) {
+            var request = indexedDB.deleteDatabase(self._name);
+            request.onerror = reject;
+            request.onsuccess = function () {
+                self._doInit();
+                resolve();
+            };
+        });
     });
 };
 
