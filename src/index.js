@@ -65,23 +65,27 @@ IDBDriver.prototype.getData = function () {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var result = [];
             var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
-            transaction.oncomplete = function () {
-                resolve(result);
-            };
             transaction.onerror = function () {
                 reject(transaction.error);
             };
             var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-            var request = objectStore.openCursor();
-            request.onsuccess = function (event) {
-                var cursor = event.target.result;
-                if (cursor) {
-                    result.push(cursor.value);
-                    cursor.continue();
-                }
-            };
+            if ('getAll' in objectStore) {
+                objectStore.getAll().onsuccess = function (event) {
+                    resolve(event.target.result);
+                };
+            } else {
+                var result = [];
+                objectStore.openCursor().onsuccess = function (event) {
+                    var cursor = event.target.result;
+                    if (cursor) {
+                        result.push(cursor.value);
+                        cursor.continue();
+                    } else {
+                        resolve(result);
+                    }
+                };
+            }
         });
     });
 };
