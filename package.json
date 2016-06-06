@@ -1,6 +1,6 @@
 {
   "name": "sync-db-idb",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "IndexedDB driver for SyncDB",
   "main": "src/index.js",
   "scripts": {
