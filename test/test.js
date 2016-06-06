@@ -24,6 +24,10 @@ describe('sync-db-idb', function () {
                     return idb.getRevData().then(function (data) {
                         data.length.should.equal(1);
                         data[0].id.should.equal(245);
+
+                        return Promise.all([idb.remove(156), idb.remove(123)]).then(function () {
+                            return Promise.all([checkValue(156, true), checkValue(654)]);
+                        });
                     });
                 });
             });
