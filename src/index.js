@@ -6,7 +6,7 @@ function IDBDriver(dbName) {
     if (typeof dbName !== 'string')
         throw new TypeError('dbName argument must be a string');
 
-    this._db = null;
+    this._db = null;.
     this._name = dbName;
 
     this._doInit();
@@ -33,13 +33,15 @@ IDBDriver.prototype.insert = function (obj) {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readwrite');
-            transaction.oncomplete = resolve;
-            transaction.onerror = function () {
-                reject(transaction.error);
-            };
+            var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readwrite');
             var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
-            objectStore.put(obj);
+            var request = objectStore.put(obj);
+            request.onsuccess = function() {
+                resolve();
+            };
+            request.onerror = function(e) {
+                reject(e);
+            }
         });
     });
 };
@@ -48,7 +50,7 @@ IDBDriver.prototype.remove = function (id) {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readwrite');
+            var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readwrite');
             transaction.onerror = function () {
                 reject(transaction.error);
             };
@@ -65,7 +67,7 @@ IDBDriver.prototype.get = function (id) {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readonly');
             transaction.onerror = function () {
                 reject(transaction.error);
             };
@@ -82,7 +84,7 @@ IDBDriver.prototype.getData = function () {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readonly');
             transaction.onerror = function () {
                 reject(transaction.error);
             };
@@ -111,7 +113,7 @@ IDBDriver.prototype.getLastSeqid = function () {
     var self = this;
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
-            var transaction = self._db.transaction(OBJECT_STORE_DATA, 'readonly');
+            var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readonly');
             transaction.onerror = function () {
                 reject(transaction.error);
             };
