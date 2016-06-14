@@ -6,7 +6,7 @@ function IDBDriver(dbName) {
     if (typeof dbName !== 'string')
         throw new TypeError('dbName argument must be a string');
 
-    this._db = null;.
+    this._db = null;
     this._name = dbName;
 
     this._doInit();
