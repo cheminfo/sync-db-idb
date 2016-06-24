@@ -85,15 +85,19 @@ IDBDriver.prototype.getData = function () {
     return this._init.then(function () {
         return new Promise(function (resolve, reject) {
             var transaction = self._db.transaction([OBJECT_STORE_DATA], 'readonly');
-            transaction.onerror = function () {
-                reject(transaction.error);
-            };
             var objectStore = transaction.objectStore(OBJECT_STORE_DATA);
             if ('getAll' in objectStore) {
-                objectStore.getAll().onsuccess = function (event) {
-                    resolve(event.target.result);
+                var request = objectStore.getAll();
+                request.onsuccess = function(event) {
+                    resolve(request.result);
+                };
+                request.onerror = function(event) {
+                    reject(request.error);
                 };
             } else {
+                transaction.onerror = function(event) {
+                    reject(transaction.error);
+                };
                 var result = [];
                 objectStore.openCursor().onsuccess = function (event) {
                     var cursor = event.target.result;
