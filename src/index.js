@@ -92,6 +92,7 @@ IDBDriver.prototype.getData = function () {
             if ('getAll' in objectStore) {
                 var results = [];
                 var getAll = function getAll(key) {
+                    if (key) key = IDBKeyRange.lowerBound(key, true);
                     var request = objectStore.getAll(key, 10000);
                     request.onsuccess = function() {
                         var result = request.result;
